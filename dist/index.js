@@ -27899,14 +27899,14 @@ const installWrapperBin = async (atmosDownloadPath) => {
     let source = "";
     let destination = "";
     try {
-        source = __nccwpck_require__.ab + "index1.js";
+        source = external_path_.resolve([__dirname, "..", "dist", "wrapper", "index.js"].join(external_path_.sep));
         destination = [atmosDownloadPath, "atmos"].join(external_path_.sep);
         core.info(`Installing wrapper script from ${source} to ${destination}.`);
         // This is a hack to fix the line ending of the shebang, which for some unknown reason is being written as CR
         // rather than LF
         //
         // await io.cp(source, destination);
-        const orig = (0,external_fs_.readFileSync)(__nccwpck_require__.ab + "index1.js", "utf8");
+        const orig = (0,external_fs_.readFileSync)(source, "utf8");
         const contents = `#!/usr/bin/env node\n\n${orig}`;
         await (0,external_fs_.writeFileSync)(destination, contents, "utf8");
         // end hack
@@ -27930,14 +27930,15 @@ const installAtmosVersion = async (info, auth, arch, installWrapper) => {
     const downloadPath = await tool_cache.downloadTool(info.downloadUrl, undefined, auth);
     const toolPath = external_path_.join(atmosInstallPath, atmosBinName);
     core.info("Renaming downloaded file...");
-    await io.mv(downloadPath, toolPath);
-    core.info(`Successfully renamed atmos from ${downloadPath} to ${toolPath}`);
-    external_fs_default().chmodSync(toolPath, 0o775);
+    // await io.mv(downloadPath, toolPath);
+    // toolPath = downloadPath
+    // core.info(`Successfully renamed atmos from ${downloadPath} to ${toolPath}`);
+    external_fs_default().chmodSync(downloadPath, 0o775);
     if (installWrapper) {
         await installWrapperBin(atmosInstallPath);
     }
-    core.info(`Successfully installed atmos to ${atmosInstallPath}`);
-    return atmosInstallPath;
+    core.info(`Successfully installed atmos to ${downloadPath}`);
+    return downloadPath;
 };
 const getAtmos = async (versionSpec, auth, arch = external_os_default().arch(), installWrapper) => {
     const osPlat = external_os_default().platform();
