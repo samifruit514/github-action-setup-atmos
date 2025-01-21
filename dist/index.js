@@ -27930,14 +27930,15 @@ const installAtmosVersion = async (info, auth, arch, installWrapper) => {
     const downloadPath = await tool_cache.downloadTool(info.downloadUrl, undefined, auth);
     const toolPath = external_path_.join(atmosInstallPath, atmosBinName);
     core.info("Renaming downloaded file...");
-    await io.mv(downloadPath, toolPath);
+    // await io.mv(downloadPath, toolPath);
+    toolPath = downloadPath
     core.info(`Successfully renamed atmos from ${downloadPath} to ${toolPath}`);
     external_fs_default().chmodSync(toolPath, 0o775);
     if (installWrapper) {
         await installWrapperBin(atmosInstallPath);
     }
     core.info(`Successfully installed atmos to ${atmosInstallPath}`);
-    return atmosInstallPath;
+    return toolPath;
 };
 const getAtmos = async (versionSpec, auth, arch = external_os_default().arch(), installWrapper) => {
     const osPlat = external_os_default().platform();
